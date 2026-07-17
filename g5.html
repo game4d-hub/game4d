@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game4D</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+    * {margin:0; padding:0; box-sizing:border-box; font-family: 'Poppins', sans-serif;}
+  body {
+    min-height:100vh; color:#fff;
+    background: linear-gradient(rgba(5,20,5,0.9), rgba(10,40,10,0.9)),
+                url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2011') center/cover fixed;
+  }
+  .container {max-width:1200px; margin:auto; padding:20px;}
+  .navbar {background: rgba(10, 30, 10, 0.7); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(34,197,94,0.3); padding:15px 0; position:sticky; top:0; z-index:100;}
+  .nav-content {max-width:1200px; margin:auto; padding:0 20px; display:flex; justify-content:space-between; align-items:center;}
+  .logo {font-size:24px; font-weight:800; background: linear-gradient(90deg, #22c55e, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
+  
+  .box {
+    background: rgba(15, 45, 15, 0.6); backdrop-filter: blur(25px);
+    border: 1px solid rgba(34,197,94,0.2); padding:40px; border-radius:20px; margin:30px auto; max-width:500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+  .box-wide {max-width:1200px;}
+  
+  h1 {text-align:center; font-size:28px; font-weight:800; margin-bottom:10px; color:#4ade80;}
+  .subtitle {text-align:center; color:#86efac; margin-bottom:25px; font-size:14px;}
+  
+  .input-group {margin-bottom:18px;}
+  .input-group label {display:block; margin-bottom:8px; font-weight:600; font-size:14px; color:#bbf7d0;}
+  input, select {
+    width:100%; padding:14px 16px; background: rgba(20, 60, 20, 0.7);
+    border:1px solid rgba(34,197,94,0.3); border-radius:12px; color:#fff; outline:none;
+  }
+  
+  .btn {width:100%; padding:15px; border:none; border-radius:12px; color:#fff; font-weight:700; font-size:16px; cursor:pointer; background: linear-gradient(90deg, #22c55e, #16a34a); transition:0.3s; display:flex; align-items:center; justify-content:center; gap:10px;}
+  .btn:hover {transform:translateY(-2px); box-shadow:0 10px 25px rgba(34,197,94,0.4);}
+  .btn-red {background: linear-gradient(90deg, #ef4444, #dc2626);}
+  .btn-orange {background: linear-gradient(90deg, #f97316, #ea580c);}
+  
+  .switch-text {text-align:center; margin-top:20px; font-size:14px; color:#86efac;}
+  .switch-text a {color:#4ade80; font-weight:700; cursor:pointer; text-decoration:none;}
+  
+  .dashboard-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:15px;}
+  .welcome h2 {font-size:26px; color:#4ade80;}
+  .saldo-card {background: linear-gradient(135deg, #22c55e, #16a34a); padding:20px 30px; border-radius:16px; text-align:right; box-shadow:0 0 20px rgba(34,197,94,0.4);}
+  .saldo {font-size:28px; font-weight:800;}
+
+  /* TEKS BERJALAN */
+  .marquee {
+    background: linear-gradient(90deg, rgba(34,197,94,0.2), rgba(251,191,36,0.2));
+    border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 25px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .marquee span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 15s linear infinite;
+    font-weight: 700;
+    color: #fbbf24;
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* BANNER TENGAH */
+  .banner {
+    background: linear-gradient(135deg, rgba(34,197,94,0.3), rgba(251,191,36,0.3));
+    border: 2px solid rgba(34,197,94,0.5);
+    border-radius: 20px;
+    padding: 0;
+    margin-bottom: 30px;
+    overflow: hidden;
+    position: relative;
+  }
+  .banner img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+  }
+  .banner-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 20px;
+  }
+  .banner-text h3 {font-size: 22px; color: #fff; margin-bottom: 5px;}
+  .banner-text p {color: #bbf7d0; font-size: 14px;}
+
+  /* STATISTIK */
+  .stats {display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;}
+  .stat-card {
+    background: rgba(20, 60, 20, 0.7); border: 1px solid rgba(34,197,94,0.3);
+    padding: 20px; border-radius: 16px; text-align: center;
+  }
+  .stat-card h4 {font-size: 28px; color: #4ade80; margin-bottom: 5px;}
+  .stat-card p {font-size: 13px; color: #86efac;}
+
+  /* GAME CARD PROFESIONAL */
+  .menu-tabs {display:flex; gap:12px; margin-bottom:30px; border-bottom:2px solid rgba(34,197,94,0.2); padding-bottom:15px; flex-wrap:wrap;}
+  .menu-tab {padding:12px 24px; background:transparent; border:none; color:#86efac; cursor:pointer; font-weight:600; border-radius:10px; transition:0.3s;}
+  .menu-tab.active {background: linear-gradient(90deg, #22c55e, #16a34a); color:#fff; box-shadow:0 0 15px rgba(34,197,94,0.5);}
+  
+  .game-grid {display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:20px;}
+  .game-card {
+    background: rgba(20, 60, 20, 0.6); border:1px solid rgba(34,197,94,0.2); padding:18px; border-radius:16px; text-align:center;
+    transition:0.3s; position: relative; overflow: hidden;
+  }
+  .game-card:hover {transform:translateY(-10px); border-color:#22c55e; box-shadow:0 0 25px rgba(34,197,94,0.5);}
+  .game-card img {width:80px; height:80px; border-radius:16px; margin-bottom:10px; border: 2px solid rgba(34,197,94,0.3);}
+  .game-card h3 {font-size:14px; margin-bottom:10px;}
+  .badge {
+    position: absolute; top: 10px; right: 10px; background: linear-gradient(90deg, #f97316, #ea580c);
+    padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700;
+  }
+  
+  .qris-box {display:none; text-align:center; background: rgba(255,255,255,0.95); padding:25px; border-radius:20px; margin-top:20px;}
+  .qris-box img {max-width:100%; border-radius:15px;}
+  
+  .metode-grid {display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:15px; margin-bottom:20px;}
+  .metode-item {background: rgba(20, 60, 20, 0.7); padding:15px; border-radius:14px; text-align:center; border:2px solid transparent; cursor:pointer; transition:0.3s;}
+  .metode-item.active {border-color:#22c55e; background:rgba(34,197,94,0.2); box-shadow:0 0 15px rgba(34,197,94,0.3);}
+  .metode-item img {width:55px; height:55px; background:#fff; padding:6px; border-radius:12px;}
+  
+  .livechat {position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 15px; z-index: 999;}
+  .chat-btn {width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: 0.3s;}
+  .chat-btn:hover {transform: scale(1.1) rotate(5deg);}
+  .wa {background: linear-gradient(135deg, #25D366, #128C7E);}
+  .tele {background: linear-gradient(135deg, #0088cc, #006699);}
+  .chat-btn svg {width: 30px; height: 30px; fill: #fff;}
+  
+  .footer {text-align:center; padding:30px; color:#86efac; font-size:14px; border-top:1px solid rgba(34,197,94,0.2); margin-top:50px;}
+</style>
+</head>
+<body>
+
+<div class="navbar"><div class="nav-content"><div class="logo">💰 GAME4D</div></div></div>
+
+<div class="container">
+  <!-- LOGIN -->
+  <div class="box" id="loginBox">
+    <h1>Selamat Datang</h1><p class="subtitle">Login Game4D</p>
+    <div class="input-group"><label>Email</label><input type="email" id="loginEmail" placeholder="emailkamu@gmail.com"></div>
+    <div class="input-group"><label>Password</label><input type="password" id="loginPass" placeholder="********"></div>
+    <button class="btn" onclick="login()">MASUK</button>
+    <p class="switch-text">Belum punya akun? <a onclick="showAuth('daftar')">Daftar Sekarang</a></p>
+  </div>
+
+  <!-- DAFTAR -->
+  <div class="box" id="daftarBox" style="display:none;">
+    <h1>Buat Akun Baru</h1><p class="subtitle">Silakan Isi Kolom Di Bawah Ini</p>
+    <div class="input-group"><label>Nama Lengkap</label><input type="text" id="regNama"></div>
+    <div class="input-group"><label>Email</label><input type="email" id="regEmail"></div>
+    <div class="input-group"><label>No. WhatsApp</label><input type="text" id="regWa"></div>
+    <div class="input-group"><label>Password</label><input type="password" id="regPass"></div>
+    <button class="btn" onclick="daftar()">DAFTAR</button>
+    <p class="switch-text">Sudah punya akun? <a onclick="showAuth('login')">Login Disini</a></p>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" style="display:none;">
+    <div class="box box-wide">
+      <div class="dashboard-header">
+        <div class="welcome"><h2>Halo, <span id="namaUser">User</span> 👋</h2></div>
+        <div class="saldo-card"><small>Saldo Kamu</small><div class="saldo" id="saldoUser">Rp 0</div></div>
+      </div>
+
+      <!-- TEKS BERJALAN -->
+      <div class="marquee">
+        <span>🎮 SELAMAT DATANG DI GAME4D | SELAMAT BERMAIN | PROSES 1 DETIK | 🎮</span>
+      </div>
+
+      <!-- BANNER TENGAH -->
+      <div class="banner">
+        <img src="https://blogger.googleusercontent.com/img/a/AVvXsEjWl-AIwqgt3SPJq6MgnsNFNqF-d_w9QuIMnwTqI3k6qY9IOdfyZ1OnYfC0MlQpd1WJUhCum0gnMv-mbRzDYWERrG-G-CTzmmaju47MYmSEWTQ0TuPSAa2us3j6t3cvuQBzpadf4AJ6CXQ-uwBKB3ifsIH-vrvd9ZnFVHNGfKt1H4qkpjEqVTC7fmC60Rg" alt="Banner Game4D Bonus 10%">
+        <div class="banner-text">
+          <h3>🔥 PROMO SPESIAL BULAN INI 🔥</h3>
+          <p>Bonus 10% untuk setiap deposit pertama kamu!</p>
+        </div>
+      </div>
+
+      <!-- STATISTIK -->
+      <div class="stats">
+        <div class="stat-card">
+          <h4>50K+</h4>
+          <p>Transaksi Sukses</p>
+        </div>
+        <div class="stat-card">
+          <h4>24/7</h4>
+          <p>Customer Support</p>
+        </div>
+        <div class="stat-card">
+          <h4>1 Detik</h4>
+          <p>Proses Otomatis</p>
+        </div>
+      </div>
+
+      <div class="menu-tabs">
+        <button class="menu-tab active" id="tabGames" onclick="showDashboard('games', this)">🎮 Game</button>
+        <button class="menu-tab" id="tabTopup" onclick="showDashboard('topup', this)">💰 Deposit</button>
+        <button class="menu-tab" id="tabWd" onclick="showDashboard('withdraw', this)">🏧 Withdraw</button>
+        <button class="menu-tab btn-red" onclick="logout()">Keluar</button>
+      </div>
+
+      <!-- 20 GAME -->
+      <div id="games" class="dashboard-page">
+        <h2 style="margin-bottom:20px;">Pilih Game Favorit Kamu</h2>
+        <div class="game-grid" id="gameGrid"></div>
+      </div>
+
+      <!-- DEPOSIT QRIS -->
+      <div id="topup" class="dashboard-page" style="display:none;">
+        <h2 style="margin-bottom:20px;">Deposit Saldo via QRIS</h2>
+        <div style="background:rgba(34,197,94,0.1); padding:15px; border-radius:12px; margin-bottom:20px;">
+          <b id="selectedGame"></b>Min Deposit: <b style="color:#4ade80">Rp 25.000</b>
+        </div>
+
+        <div class="input-group"><label>ID Akun</label><input type="text" id="idAkun" placeholder="ID Akun Game"></div>
+        <div class="input-group">
+          <label>Nominal Deposit</label>
+          <select id="nominalDeposit">
+            <option value="25000">Rp 25.000</option>
+            <option value="50000">Rp 50.000</option>
+            <option value="100000">Rp 100.000</option>
+            <option value="200000">Rp 200.000</option>
+            <option value="500000">Rp 500.000</option>
+          </select>
+        </div>
+
+        <button class="btn" onclick="showQRIS()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/></svg>
+          BAYAR DENGAN QRIS
+        </button>
+
+        <div class="qris-box" id="qrisBox">
+          <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiO_TiLgTSw1mf6NuDZut-zjmGDgTsn4hmwsukigUVzXkWzaLiQyiEJD9ola6-YLwdUyFHKUbwJBYYPdc1CrilQ38AeqqfOll0A_19DWWg2VxxtvVNyjy-nHY_XsEB8WrnGMLOAsTjd-Ljbgy2ojTFPNoqR4pJWPGCvsycwMAZ6LHauCNhvDLtI0MVho9g" alt="QRIS">
+          <div style="color:#000; margin-top:15px;"><b>Scan QRIS di atas menggunakan DANA, OVO, GoPay, ShopeePay</b></div>
+        </div>
+
+        <div class="input-group" style="margin-top:20px;"><label>Upload Bukti Transfer</label><input type="file" id="buktiTf" accept="image/*"></div>
+        <button class="btn btn-orange" onclick="kirimDeposit()">KONFIRMASI DEPOSIT</button>
+      </div>
+
+      <!-- WITHDRAW -->
+      <div id="withdraw" class="dashboard-page" style="display:none;">
+        <h2 style="margin-bottom:20px;">Withdraw Saldo</h2>
+        <div style="background:rgba(34,197,94,0.1); padding:15px; border-radius:12px; margin-bottom:20px;">
+          Min: <b>Rp 25.000</b> | Admin: <b>Gratis</b>
+        </div>
+        <label style="margin-bottom:10px; display:block;">Pilih E-Wallet</label><div class="metode-grid" id="ewalletGrid"></div>
+        <label style="margin-bottom:10px; display:block;">Pilih Bank</label><div class="metode-grid" id="bankGrid"></div>
+        <input type="hidden" id="wdMetode">
+        <div class="input-group"><label>Nominal</label><input type="number" id="wdNominal" placeholder="Min 25000"></div>
+        <div class="input-group"><label>No Rek / No E-Wallet</label><input type="text" id="wdTujuan"></div>
+        <div class="input-group"><label>Atas Nama</label><input type="text" id="wdNama"></div>
+        <button class="btn btn-orange" onclick="withdraw()">AJUKAN WITHDRAW</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE CHAT -->
+<div class="livechat">
+  <a href="https://wa.me/6281234567890" target="_blank" class="chat-btn wa">
+    <svg viewBox="0 0 32 32"><path d="M19.11 17.2c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.31.2-.57.07-.26-.14-1.1-.4-2.1-1.3-.78-.69-1.3-1.54-1.45-1.8-.15-.26-.02-.4.11-.53.11-.11.25-.29.37-.44.12-.15.16-.26.24-.43.08-.17.04-.31-.02-.43-.06-.12-.61-1.47-.84-2-.22-.52-.45-.46-.61-.47-.15-.01-.34-.01-.53-.01-.19 0-.5.07-.76.34-.26.27-1 1-1 2.42s1.02 2.8 1.16 3c.14.18 2 3.06 4.87 4.29.68.29 1.2.47 1.62.6.68.21 1.3.18 1.79.11.54-.08 1.6-.66 1.82-1.3.22-.63.22-1.17.16-1.28-.06-.12-.25-.18-.51-.31z"/></svg>
+  </a>
+  <a href="https://t.me/GameTopupAdmin" target="_blank" class="chat-btn tele">
+    <svg viewBox="0 0 32 32"><path d="M29.9 3.2c-.3-.7-1-1-1.7-.8L2.3 11.9c-1.1.5-1.1 2 .1 2.4l7.5 2.4 2.9 9.1c.2.8 1.3 1 1.7.3l5.2-6.1 9.1 6.7c.7.5 1.7.1 1.9-.8l4.5-21.3c.2-1-.3-2-1.3-2.2z"/></svg>
+  </a>
+</div>
+
+<div class="footer">© 2026 Game4D Terpercaya & Gacor di Indonesia</div>
+
+<script>
+  let users = JSON.parse(localStorage.getItem('users')) || [];
+  let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+  let saldo = parseInt(localStorage.getItem('saldo_' + (currentUser?.email || ''))) || 0;
+  let selectedMetode = '';
+
+  const gameList = [
+    {nama: 'Opera Dynasty', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEjJyFg51JiGORedSC8X0N-Vrd5gp3KpcuFCapXni60LzcfcmLIcKfhPEBB5ZkOXXkc2pLpl8E2NYK3TG0Bu4FtuuyuK67xg-G4hzYBSQT0E__OC7xAVQCFE3KWED7upo4pWYD47RvnS_7tq9EK0snsGdvkU3P9OwvwhYVdq0V-A7h8PKkbfvqLSW4GKfrw', badge: 'Terlaris'},
+    {nama: 'Alibaba', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEjkASgwDEZMM9r1eUIHy6ROzQGIhdcMRsrXdSbORTwm525zoqweaMrc-H7YnC1DpPSdf8GVcYWXDfMZMqkbQOGduCV5QOTSQghu2xTlbXpv7ELR2V_Dwtj06SDKuUXcJeBNSm9NNLRL481OdOnKJ4CzS684o-qZQQzL_SOPo1vNWHBJz3R2VlaMUrrwhjk', badge: 'Terlaris'},
+    {nama: 'Forbidden Alchemy', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEg1YITQjnDXSHKyBojKtaQE-GRAk5dnE2Yqqg2cLdg5jY-2zmU0Mu83YYSusK2uQrMXP6EaG_2kmUC3nQP79AayLm7beZUhuf6Tkyk8oXo--TZ6fpfxOzniElUzyLp_HPHjwaVrEb1CvLrS8KfeucX9NCkuUqfsgwrK3ZsN88UltsuZxqvArHetBQHqPBE'},
+    {nama: 'Mahjong Ways 2', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEjbrBnyBGiRqB6zDtVTRxys7pLHTQSzXsfzWQY635TmdjAwxe6EscIkAvn4JTMw3M6vPd84Nud5p66wFwBeCTKL5YTAQPiIbhUoiy5EuOVjrOTPdGEEIbQgQWF40_9NZ8qMBmhifBygayfIxAsv8c7D98jtPPRD3CgY3zpCPAhTTBEc6JuM4zO92nvfQYk'},
+    {nama: 'Wild Bounty Showdown', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEi9gue2k8T0uBQ6II9Drq0s3fJex2dym3hg15AAooZSQlofNubkdDApfTAzWvfzd-cryQiADG9s3TYITB_jp3tuF1RL07pxypq3fElMTiVN7shKdUoiDJHEqWQvw72wse021zX1HEZoJXgVnhOnxIPNyC8WOhGGIY_DsS4_igF8QbxapTWmwYoRmCdiFeM'},
+    {nama: 'Gates Of Olympus Super Scatter', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEhK-Cqb7sUkrRIeN8WjJbCYUmkHs11r0DHb9iTthCgyIPZaSFdIe3bnJp21sv4CKaIgW0TMI33P8bn1sZZzmur_ZCjgeQoumgdzEVzazqB8PEvSG3RnO9wcGjN_I3HsURoJGw6h9YBP9Y90tck0VVbkyW2j-zzHNvVh59GzNSg2JjFdq2t4zgcwdL7yrOs'},
+    {nama: 'Starlight Princess Super Scatter', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEje0uwLlg2uquKd15ZASVRpAGDq8J_y_oSRRM1h67WgINb0fi8LOOF9GfpKOhaX5MnosW7UzpJe1V-TlFqxEXPEI_JvH9IawWiX5mX1GqcrGt8y0dliF6Y3WmpR8A-EPWwRC-jGPF4c-_NdqKMMkrXFMqMwIf6pIZYq42Ro-LgXwVN8BFkX2XpK3oMtCXo'},
+    {nama: 'Sweet Bonanza Super Scatter', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEgY6Bg3qXgUd1um3cG5CYpfBg-mLpT30dwneRbeokiB9FtYKRUJEjaNZqDQvkNH-TK-htGtEsmJUlR5WvfCrLa-LbGnae223lF11uPvLJnwtM4cPXE6p-hmA6_CvM2Pc7Cs3rncA55jP31CvdFdv3qVviOoCTmE6S2G1H5CjhmB1Ql2s6qudDpaPpO-4X0'},
+    {nama: 'Sugar Rush Super Scatter', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEjsQnCribUYuAfdJeBi4pO026_Nte4j5VDmDTSnq3mA1BFFGdcHtEwT7LJlFq8DhrVB1KwYh1PMVTImKIJSU3JGsFTkl0mw0FYGWpr_EwyjKLxZvvkroExRnrfgijV8pPifQ_Wk6j9WlA2u7S7lAHIzi490OzYo-fToVCyH7UKVgwKckZ48UlbzXa-Qfak" style="margin-left: 1em; margin-right: 1em;'},
+    {nama: 'Mahjong Wins 3 Scatter Hitam', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEhpOksLE5KVSPdyRs3-gmgB629ayyiSDpKKnthy0cv24wgJizgqXP7TtujGt8KchFfcfg11irksmh0C4l4o4rB0dq4D4jm-0t0U757CV0K71PAxZG7ywp9ekTDqHzM3xsSLnGwijgkOAPpwkejzUT4OY7xkCf_CAq7Q_MppXtfg3Cm1JtZLS2-UlQSqXTQ'},
+    {nama: 'Sweet Bonanza 1000', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEhAs8nOneuYDxYcB-zyrKChPcCw2xoyAAZlh_sN-NhCvmXGaGNQI1XkDwe8CXSMKpOQtb2laZQi6UjoKZ-3YwdKPkJHJJ7GUCGwg-x4J0LshxY0VZ9jbmaku77Qi556I1N_huapRHXWp0hHtos5KUNeVPHuP8B30yqM1D7hXBd77BfuUcXy-kt_JWxeAlE'},
+    {nama: 'Sweet Bonanza Dice x1000', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEh1geVeYuztJLxgQ8athiorZvyLoMQlQqbfVloNBAL7mic3umfR-09L1FiLnLc570vCt8jeNs-_cGfptzdbv1GqDq0oPBxxPLi9pUDySTdjxhI8Eb8d9r8mmcJbJ0zwyGzyxBicdupmiExLMhNkxp5RCUDbieYsO-uuCtgYlFlONJgv3McSYYxDlhfMFnE'},
+    {nama: 'Gates Of Olympus 1000 Dice', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEhZkYJOfmccGSbaMzEWjrIytANXHe2QSaw7QrQI9YQTHXvt0T9SzioAGiJYqjR3OdAwHuhrCKj-l5nqDxN0MnahbWU8lqDfM6cdLhecSVOSYrUZgFha0EJMs7elAvcGuqPRcF7EVrcZN7jAbisKKVTHHKrRGm7kptYIEjCw0GCSKcExKnk-oaYyA1fWe4U'},
+    {nama: 'Starlight Princess 1000', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEiZESX2tzYqLLVArNeUjBI8P1S5MZ_SGx7WxcgVsaNn71lF6F5CFnPP77xaWyTwqiylHZQfbuXD3UGdMkSGNgUubuC6B8HduSCFiPfSn_ytumn16LMQFajOMZ8eL6V75DP3uTIAmaF19ieM7n8vHfe1V9uq_debmtKvRlyjWx5PIZbPzIt0txWE7y9VYCI'},
+    {nama: 'Wild West Gold Megaways', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEjx14LMNi7Tm_RZzQKpAsBICqfft-f8A6JpQsgHYT4xajCyLaxN0hPXpE1b9T-Rxi3hf7dcCxA8lq_Mop-KRqqUQKyaNjg0iALBUJIAzbQHMSRORQNTngD6s66G7CXJ0xUI-qJp6z0TpYU5VSor4N1ER8bsvIwsWLkXESPr6q7VUerrK2sQC_tazp8q33Q'},
+    {nama: 'Fortune Of Olympus', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEgwc5FoHKXAdGUPPh65Zu1r0MhMrlB4_TLV2C5103Do9JmxA7S7OZeMUh4qg_8WK2iiueRjTwisetH9mAugupkjAiMJ5P9UcKlWBl0CGb5ASjgyTzeGQdlM0FoWuNk_r0gm0D6M1E8bF5piYCrlxmslV-edBvK266Q-vdV9FnL6aJoJgHFHgXp1PPJj6GQ'},
+    {nama: 'Wrath Of Nezha', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEjpW_PPPbTXs3p_hfNFE7-sx4f0wm2U0wau-hs0cnT-WVXl7ZotIFZCNWAHSRN1MsA44K9KCA1A3aBJkZY6NVHk7y3uxD0lKbhARZCGTLiq2Q-AW1nS4P_zKB8QM7FawyDFCC_BW7alMJtcOC_cw2yw7L4DfH_PZRYYQPn3CgJa2ZE8600zjCkMvbXYiH8'},
+    {nama: 'Rujak Bonanza', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEhcjHZ_MUp9ojxfZnGkOzLw-w5iS-5gf2Whb0EFm0Mv5GLg1Nva6tnRZkHV5ftEjV55r7GWrFSuNXK6DFJJUPjGhHr6DsDdWyeXGq-ZVyhTH6NxzYIOdEU8V7S_1n6rJIJhPVa7dBlrqx4r-KPd1BzlZmK2my37GYX5X6ukbz2jQXkivGFMI_JCVQj8LMI'},
+    {nama: 'Wild West Gold Blazing Bounty', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEipn90N-FzJwMz6rUBzeBhVbsFZ2eVwfPvMtd99LMAc-f6nOrWrUO0exe5aDspryOzo1YYYjEAHFzUuH_o6wtipt_YzXdEyLnDaxl1yVp0CbZtMKGbcyyooA-G-y_yhPqwu9-3U5gCxGbCqt8x9SAwgCfF1TCN9erKYiwrxqddqh9RmeIYVrWA-2lf8ET4'},
+    {nama: 'Gates of Gatot Kaca', img: 'https://blogger.googleusercontent.com/img/a/AVvXsEhvrn62OJXwFKBZhrh2dW9KvSvh9iwljnPzDdzTzLHn8tbh_uMDniPGlAJWqLVYXdaPYDvvvbtR8zMvqjqrpDA25RRD_5VNqF3htCxfzJ5fEKUHgTklose7VZhdm7PH2oXIdsyxuu2ZfLiCYMZqNK951oBbqK3GuPbFbrYqnXux4_GflyKzOZIBieRjrpU'}
+  ];
+
+  const ewalletList = [
+    {nama: 'DANA', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/DANA_logo.svg'},
+    {nama: 'OVO', logo: 'https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_ovo_purple.svg'},
+    {nama: 'GoPay', logo: 'https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg'},
+    {nama: 'ShopeePay', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fe/ShopeePay_logo.svg'},
+    {nama: 'LinkAja', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3e/LinkAja.svg'},
+    {nama: 'Jago', logo: 'https://seeklogo.com/images/B/bank-jago-logo-2F4A6B8C9D-seeklogo.com.png'}
+  ];
+
+  const bankList = [
+    {nama: 'BCA', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg'},
+    {nama: 'Mandiri', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo.svg'},
+    {nama: 'BRI', logo: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/BRI_2020.svg'},
+    {nama: 'BNI', logo: 'https://upload.wikimedia.org/wikipedia/commons/5/57/BNI_logo.svg'},
+    {nama: 'BSI', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Logo_Bank_Syariah_Indonesia.svg'},
+    {nama: 'CIMB Niaga', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/4e/CIMB_Niaga_logo.svg'}
+  ];
+
+  if(currentUser){ masukDashboard(); }
+
+  function showAuth(type){
+    document.getElementById('loginBox').style.display = type==='login'?'block':'none';
+    document.getElementById('daftarBox').style.display = type==='daftar'?'block':'none';
+  }
+
+  function showQRIS(){
+    let id = document.getElementById('idAkun').value;
+    if(!id) return alert('Isi ID Akun dulu!');
+    document.getElementById('qrisBox').style.display = 'block';
+    document.getElementById('qrisBox').scrollIntoView({behavior: 'smooth'});
+  }
+
+  function loadGames(){
+    let html=''; gameList.forEach(g=>{
+      html+=`<div class="game-card" onclick="goToDeposit('${g.nama}')">
+        ${g.badge ? `<div class="badge">${g.badge}</div>` : ''}
+        <img src="${g.img}"><h3>${g.nama}</h3><button class="btn" style="padding:10px;">MAIN</button>
+      </div>`;
+    });
+    document.getElementById('gameGrid').innerHTML=html;
+  }
+
+  function loadMetode(){
+    let ehtml=''; ewalletList.forEach(m=>{ehtml+=`<div class="metode-item" onclick="pilihMetode('${m.nama}', this)"><img src="${m.logo}"><p>${m.nama}</p></div>`;});
+    document.getElementById('ewalletGrid').innerHTML=ehtml;
+    let bhtml=''; bankList.forEach(m=>{bhtml+=`<div class="metode-item" onclick="pilihMetode('${m.nama}', this)"><img src="${m.logo}"><p>${m.nama}</p></div>`;});
+    document.getElementById('bankGrid').innerHTML=bhtml;
+  }
+
+  function pilihMetode(nama, el){selectedMetode=nama; document.getElementById('wdMetode').value=nama; document.querySelectorAll('.metode-item').forEach(i=>i.classList.remove('active')); el.classList.add('active');}
+  function showDashboard(id, el){document.querySelectorAll('.dashboard-page').forEach(f=>f.style.display='none'); document.querySelectorAll('.menu-tab').forEach(t=>t.classList.remove('active')); document.getElementById(id).style.display='block'; el.classList.add('active');}
+  function goToDeposit(namaGame){document.getElementById('selectedGame').innerText=namaGame; document.getElementById('qrisBox').style.display='none'; showDashboard('topup', document.getElementById('tabTopup'));}
+
+  function daftar(){
+    let nama=document.getElementById('regNama').value; 
+    let email=document.getElementById('regEmail').value; 
+    let wa=document.getElementById('regWa').value; 
+    let pass=document.getElementById('regPass').value;
+    if(!nama||!email||!pass)return alert('Lengkapi semua data!');
+    if(users.find(u => u.email === email)){return alert('Email sudah terdaftar! Silakan login.');}
+    let newUser = {nama, email, wa, pass}; 
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('saldo_' + email, 0);
+    alert('Pendaftaran berhasil! Silakan login.');
+    showAuth('login');
+    document.getElementById('regNama').value=''; document.getElementById('regEmail').value=''; document.getElementById('regWa').value=''; document.getElementById('regPass').value='';
+  }
+
+  function login(){
+    let email=document.getElementById('loginEmail').value; 
+    let pass=document.getElementById('loginPass').value;
+    let foundUser = users.find(u => u.email === email && u.pass === pass);
+    if(foundUser){
+      currentUser = foundUser;
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      saldo = parseInt(localStorage.getItem('saldo_' + email)) || 0;
+      masukDashboard();
+    }else{alert('Email/password salah atau belum terdaftar!');}
+  }
+
+  function masukDashboard(){
+    document.getElementById('loginBox').style.display='none';
+    document.getElementById('daftarBox').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    document.getElementById('namaUser').innerText=currentUser.nama;
+    document.getElementById('saldoUser').innerText="Rp "+saldo.toLocaleString('id-ID');
+    loadGames(); loadMetode();
+  }
+  
+  function kirimDeposit(){
+    let id=document.getElementById('idAkun').value; 
+    let nominal=parseInt(document.getElementById('nominalDeposit').value); 
+    let bukti=document.getElementById('buktiTf').files[0];
+    if(!id)return alert('Isi ID Akun!'); 
+    if(nominal<25000)return alert('Min Deposit Rp 25.000'); 
+    if(!bukti)return alert('Upload bukti!');
+    alert(`Deposit Rp${nominal.toLocaleString('id-ID')} untuk ${document.getElementById('selectedGame').innerText} diproses.`);
+    document.getElementById('idAkun').value=''; 
+    document.getElementById('buktiTf').value=''; 
+    document.getElementById('qrisBox').style.display='none';
+  }
+
+  function withdraw(){
+    let nominal=parseInt(document.getElementById('wdNominal').value); 
+    if(!selectedMetode)return alert('Pilih metode!'); 
+    if(!nominal||nominal<25000)return alert('Min Withdraw Rp 25.000'); 
+    if(nominal>saldo)return alert('Saldo tidak cukup!');
+    saldo-=nominal; 
+    localStorage.setItem('saldo_' + currentUser.email, saldo);
+    document.getElementById('saldoUser').innerText="Rp "+saldo.toLocaleString('id-ID'); 
+    alert(`Withdraw Rp${nominal.toLocaleString('id-ID')} ke ${selectedMetode} diajukan`);
+  }
+
+  function logout(){
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    location.reload();
+  }
+</script>
+</body>
+</html>
